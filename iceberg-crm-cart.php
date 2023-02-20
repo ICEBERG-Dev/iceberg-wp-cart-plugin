@@ -50,6 +50,10 @@ function iceberg_crm_cart_woocommerce_required_admin_notice() {
 
 
 function iceberg_crm_cart_send_order_products_to_server($order_id) {
+	global $wpdb;
+    $table_name = $wpdb->prefix . 'iceberg_crm_cart_tokens';
+    $token = $wpdb->get_var("SELECT token FROM $table_name");
+	
     $order = wc_get_order($order_id);
     $order_products = $order->get_items();
 
@@ -64,16 +68,32 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
             'count' => $order_product->get_quantity(),
         );
     }
-  
-    $url = HOST.':'.PORT.'/getCategories';
+	
+	$data_to_send = [
+		'token'=>$token,
+		'data'=>[
+			'clientData'=>[
+				'phone' => $order->get_billing_phone(),
+				'name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+				'address' => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(),
+			    'comment' => $order->get_customer_note(),
+			],
+			'orderData'=>[
+				'products'=>$data,
+			],
+		],
+	];
+	
+	
+    $url = HOST.':'.PORT;
     $response = wp_remote_post($url.'/sendForm', array(
         'method' => 'POST',
         'timeout' => 45,
         'redirection' => 5,
         'httpversion' => '1.0',
         'blocking' => true,
-        'headers' => array(),
-        'body' => array('data' => json_encode($data)),
+        'headers' => array('Content-Type' => 'application/json'),
+        'body' => json_encode($data_to_send),
         'cookies' => array()
     ));
 
