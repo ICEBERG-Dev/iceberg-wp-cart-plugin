@@ -1,1 +1,0 @@
-# iceberg-wp-cart-plugin
