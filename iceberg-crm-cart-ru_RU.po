@@ -1,0 +1,4 @@
+#: plugin.php
+msgid "hello"
+msgstr "привет"
+
