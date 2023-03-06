@@ -73,7 +73,7 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
 		'token'=>$token,
 		'data'=>[
 			'clientData'=>[
-				'phone' => $order->get_billing_phone(),
+				'phone' => (int)preg_replace('/\D/', '', $order->get_billing_phone()),
 				'name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
 				'address' => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(),
 			    'comment' => $order->get_customer_note(),
@@ -93,7 +93,7 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
         'httpversion' => '1.0',
         'blocking' => true,
         'headers' => array('Content-Type' => 'application/json'),
-        'body' => json_encode($data_to_send),
+        'body' => json_encode($data_to_send, JSON_UNESCAPED_UNICODE),
         'cookies' => array()
     ));
 
