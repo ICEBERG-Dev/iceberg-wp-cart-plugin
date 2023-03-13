@@ -83,7 +83,7 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
 			],
 		],
 	];
-//    var_dump(json_encode($data_to_send, JSON_UNESCAPED_UNICODE));
+
     $url = ICEBERG_CRM_CART_HOST.':'.ICEBERG_CRM_CART_PORT;
     var_dump($url);
     $response = wp_remote_post($url.'/sendForm', array(
