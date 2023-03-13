@@ -12,6 +12,7 @@ require_once plugin_dir_path( __FILE__ ) . 'themes/remote_params.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/iceberg_crm_cart_admin_func.php';
 require_once plugin_dir_path( __FILE__ ) . 'views/iceberg_crm_cart_views.php';
 
+
 function iceberg_crm_cart_install() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'iceberg_crm_cart_tokens';
