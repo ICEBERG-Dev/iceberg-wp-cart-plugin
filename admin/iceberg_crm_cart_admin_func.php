@@ -2,11 +2,11 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
 
 
-function handle_token_authentication_cart() {
+function iceberg_crm_cart_handle_token_authentication_cart() {
     if (isset($_POST['iceberg_crm_cart_token'])) {
       $token = sanitize_text_field($_POST['iceberg_crm_cart_token']);
-      $response = send_token_to_server_cart($token);
-      
+      $response = iceberg_crm_cart_send_token_to_server_cart($token);
+
 
       if ($response == 'OK') {
         add_settings_error('iceberg_crm_cart', 'iceberg_crm_cart_message', __('Token was saved successfully.', 'iceberg_crm_cart'), 'updated');
@@ -21,14 +21,14 @@ function handle_token_authentication_cart() {
         $token = "";
         add_settings_error('iceberg_crm_cart', 'iceberg_crm_cart_message', __('Token was not saved. Server response: '.$response, 'iceberg_crm_cart'));
       }
-      store_token_in_database_cart($token);
+        iceberg_crm_cart_store_token_in_database_cart($token);
 
     }
 }
-  
-function send_token_to_server_cart($token) {
+
+function iceberg_crm_cart_send_token_to_server_cart($token) {
     // URL of the endpoint to send the request to
-    $url = HOST.':'.PORT.'/auth';
+    $url = ICEBERG_CRM_CART_HOST.':'.ICEBERG_CRM_CART_PORT.'/auth';
 
     $wphost_id = parse_url(home_url())['host'];
 
@@ -58,7 +58,7 @@ function send_token_to_server_cart($token) {
     }
 }
 
-function store_token_in_database_cart($token) {
+function iceberg_crm_cart_store_token_in_database_cart($token) {
     global $wpdb;
     $table_name = $wpdb->prefix . "iceberg_crm_cart_tokens";
     $data = array(
@@ -68,7 +68,7 @@ function store_token_in_database_cart($token) {
     $wpdb->replace($table_name, $data);
 }
 
-function add_token_form_section_cart() {
+function iceberg_crm_cart_add_token_form_section_cart() {
     add_settings_section(
         'iceberg_crm_cart_section',
         __('Iceberg CRM cart Settings', 'iceberg_crm_cart'),

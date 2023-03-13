@@ -2,7 +2,7 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
 require_once './iceberg_crm_cart_get_functions.php';
 
-function find_wpID_by_crmID($crmID) {
+function iceberg_crm_cart_find_wpID_by_crmID($crmID) {
     $args = array(
         'taxonomy' => 'product_cat',
         'meta_query' => array(
@@ -20,7 +20,7 @@ function find_wpID_by_crmID($crmID) {
     }
     return false;
 }
-function is_product_exists($crmID){
+function iceberg_crm_cart_is_product_exists($crmID){
     // echo "HELLO FROM HELL<br>";
     $product = get_posts(array(
         'post_type' => 'product',
@@ -44,7 +44,7 @@ function is_product_exists($crmID){
 
 $products = iceberg_crm_cart_get_products();
 foreach ($products['data'] as $product) {
-    $product_exist = is_product_exists($product["id"]);
+    $product_exist = iceberg_crm_cart_is_product_exists($product["id"]);
     // var_dump($product_exist);
 
     if ($product_exist){
@@ -55,14 +55,14 @@ foreach ($products['data'] as $product) {
             'post_status' => 'pending'
         );
         $updated_product_id = wp_update_post($new_product);
-        
-        update_post_meta($updated_product_id, '_stock', $product['count']); 
+
+        update_post_meta($updated_product_id, '_stock', $product['count']);
         update_post_meta($updated_product_id, '_manage_stock', "yes");
         update_post_meta($updated_product_id, '_regular_price', $product['price']);
         update_post_meta($updated_product_id, '_price', $product['price']);
-        update_post_meta($updated_product_id, '_sku', $product['article']); 
+        update_post_meta($updated_product_id, '_sku', $product['article']);
         update_post_meta($updated_product_id, '_weight', $product['weigth']);
-        wp_set_object_terms($updated_product_id, array((integer)find_wpID_by_crmID($product['category'])), 'product_cat');
+        wp_set_object_terms($updated_product_id, array((integer)iceberg_crm_cart_find_wpID_by_crmID($product['category'])), 'product_cat');
         update_post_meta($updated_product_id, 'crmID', $product['id']);
     }else{
         $new_product = array(
@@ -72,13 +72,13 @@ foreach ($products['data'] as $product) {
             'post_type' => 'product'
         );
         $new_product_id = wp_insert_post($new_product);
-        update_post_meta($new_product_id, '_stock', $product['count']); 
+        update_post_meta($new_product_id, '_stock', $product['count']);
         update_post_meta($new_product_id, '_manage_stock', "yes");
         update_post_meta($new_product_id, '_regular_price', $product['price']);
         update_post_meta($new_product_id, '_price', $product['price']);
-        update_post_meta($new_product_id, '_sku', $product['article']); 
+        update_post_meta($new_product_id, '_sku', $product['article']);
         update_post_meta($new_product_id, '_weight', $product['weigth']);
-        wp_set_object_terms($new_product_id, array((integer)find_wpID_by_crmID($product['category'])), 'product_cat');
+        wp_set_object_terms($new_product_id, array((integer)iceberg_crm_cart_find_wpID_by_crmID($product['category'])), 'product_cat');
         update_post_meta($new_product_id, 'crmID', $product['id']);
     }
 

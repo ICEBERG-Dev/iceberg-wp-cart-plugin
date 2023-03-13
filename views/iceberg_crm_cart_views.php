@@ -46,20 +46,20 @@ function iceberg_crm_cart_settings_page_cart() {
     </div>
     <?php
 }
-function check_token_exists_cart() {
+function iceberg_crm_cart_check_token_exists_cart() {
     global $wpdb;
-    
+
     // Check if table exists
     $table_name = $wpdb->prefix . "iceberg_crm_cart_tokens";
     if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
       return false;
     }
-    
+
     // Check if token field exists and is not empty
     $token = $wpdb->get_var("SELECT token FROM $table_name LIMIT 1");
     if(empty($token)) {
       return false;
     }
-    
+
     return true;
 }

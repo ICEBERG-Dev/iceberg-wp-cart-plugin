@@ -4,7 +4,7 @@ require_once './iceberg_crm_cart_get_functions.php';
 
 
 
-function update_wc_category_by_crmID($term_id, $crmID, $name, $slug, $parent_id, $description) {
+function iceberg_crm_cart_update_wc_category_by_crmID($term_id, $crmID, $name, $slug, $parent_id, $description) {
       $category_id = $term_id;
       $update_args = array(
           'name' => $name,
@@ -16,7 +16,7 @@ function update_wc_category_by_crmID($term_id, $crmID, $name, $slug, $parent_id,
       update_term_meta($category_id, 'crmID', $crmID);
 }
 
-function get_term_actual_id_by_crm_id($array, $id){
+function iceberg_crm_cart_get_term_actual_id_by_crm_id($array, $id){
     foreach ($array as $data) {
         if ($data['id'] === $id) {
             $term = get_term_by('name', $data['name'], 'product_cat');
@@ -27,7 +27,7 @@ function get_term_actual_id_by_crm_id($array, $id){
     return 0;
 }
 
-function create_wc_category($name, $crmID, $slug, $parent, $description) {
+function iceberg_crm_cart_create_wc_category($name, $crmID, $slug, $parent, $description) {
   $args = array(
     'taxonomy' => 'product_cat',
     'hide_empty' => false,
@@ -62,7 +62,7 @@ function create_wc_category($name, $crmID, $slug, $parent, $description) {
 
 $categories = iceberg_crm_cart_get_categories();
 foreach ($categories['result'] as $category) {
-  if ( $category['parent'] != 0){ $category['parent'] = get_term_actual_id_by_crm_id($categories["result"], $category['parent']); }
+  if ( $category['parent'] != 0){ $category['parent'] = iceberg_crm_cart_get_term_actual_id_by_crm_id($categories["result"], $category['parent']); }
 
   $args = array(
     'taxonomy' => 'product_cat',
@@ -76,9 +76,9 @@ foreach ($categories['result'] as $category) {
   );
   $terms = get_terms($args);
   if (!empty($terms)) {
-    update_wc_category_by_crmID($terms[0]->term_id, $category['id'], $category['name'], $category['urlized'], $category['parent'], $category['description']);
+      iceberg_crm_cart_update_wc_category_by_crmID($terms[0]->term_id, $category['id'], $category['name'], $category['urlized'], $category['parent'], $category['description']);
   } else {
-    create_wc_category($category['name'], $category['id'], $category['urlized'], $category['parent'], $category['description']);
+      iceberg_crm_cart_create_wc_category($category['name'], $category['id'], $category['urlized'], $category['parent'], $category['description']);
   }
 }
 

@@ -5,12 +5,12 @@ require_once './iceberg_crm_cart_get_functions.php';
 
 $cats_mirr = [];
 
-function find_wpID_by_crmID($crmID) {
+function iceberg_crm_cart_find_wpID_by_crmID($crmID) {
     global $cats_mirr;
     $array = $cats_mirr;
     $crmIDs = array_column($array, 'crmID');
     $index = array_search($crmID, $crmIDs);
-  
+
     if ($index === false) {
       return "";
     } else {
@@ -18,7 +18,7 @@ function find_wpID_by_crmID($crmID) {
     }
 }
 
-function get_term_actual_id_by_crm_id($array, $id){
+function iceberg_crm_cart_get_term_actual_id_by_crm_id($array, $id){
     foreach ($array as $data) {
         if ($data['id'] === $id) {
             $term = get_term_by('name', $data['name'], 'product_cat');
@@ -29,7 +29,7 @@ function get_term_actual_id_by_crm_id($array, $id){
     return 0;
 }
 
-function is_product_exists($crm_id){
+function iceberg_crm_cart_is_product_exists($crm_id){
     $args = array(
         'post_type' => 'product',
         'meta_query' => array(
@@ -41,7 +41,7 @@ function is_product_exists($crm_id){
         )
     );
     $products = get_posts($args);
-    
+
     if (count($products) > 0) {
         return $products;
     }
@@ -52,9 +52,9 @@ if ($_POST['type'] === "cat"){
 $categories = iceberg_crm_cart_get_categories();
 foreach ($categories['result'] as $category) {
     global $cats_mirr;
-    
 
-    if ( $category['parent'] != 0){ $category['parent'] = get_term_actual_id_by_crm_id($categories["result"], $category['parent']); }
+
+    if ( $category['parent'] != 0){ $category['parent'] = iceberg_crm_cart_get_term_actual_id_by_crm_id($categories["result"], $category['parent']); }
 
   $term_exists = term_exists($category['name'], 'product_cat');
 
@@ -93,9 +93,9 @@ if ($_POST['type'] === "prod"){
 $products = iceberg_crm_cart_get_products();
 foreach ($products['data'] as $product) {
     global $cats_mirr;
-    
 
-    if (is_product_exists($product["id"])){
+
+    if (iceberg_crm_cart_is_product_exists($product["id"])){
 
     }else{
         $new_product = array(
@@ -104,15 +104,15 @@ foreach ($products['data'] as $product) {
             'post_status' => 'pending',
             'post_type' => 'product'
         );
-        
-        $product_id = wp_insert_post($new_product);
-        
 
-        update_post_meta($product_id, '_stock', $product['count']); 
+        $product_id = wp_insert_post($new_product);
+
+
+        update_post_meta($product_id, '_stock', $product['count']);
         update_post_meta($product_id, '_manage_stock', "yes");
         update_post_meta($product_id, '_regular_price', $product['price']);
         update_post_meta($product_id, '_price', $product['price']);
-        update_post_meta($product_id, '_sku', $product['article']); 
+        update_post_meta($product_id, '_sku', $product['article']);
         update_post_meta($product_id, '_weight', $product['weigth']);
         wp_set_object_terms($product_id, (int)find_wpID_by_crmID($product['category']), 'product_cat', true);
         update_post_meta($product_id, 'crmID', $product['id']);

@@ -16,19 +16,19 @@ function iceberg_crm_cart_install() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'iceberg_crm_cart_tokens';
     $charset_collate = $wpdb->get_charset_collate();
- 
+
     if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
         $sql = "CREATE TABLE $table_name (
           id mediumint(9) NOT NULL AUTO_INCREMENT,
           token text NOT NULL,
           PRIMARY KEY  (id)
         ) $charset_collate;";
- 
+
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
     }
-    
-    
+
+
 }
 function iceberg_crm_cart_uninstall() {
     global $wpdb;
@@ -53,7 +53,7 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
 	global $wpdb;
     $table_name = $wpdb->prefix . 'iceberg_crm_cart_tokens';
     $token = $wpdb->get_var("SELECT token FROM $table_name");
-	
+
     $order = wc_get_order($order_id);
     $order_products = $order->get_items();
 
@@ -68,7 +68,7 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
             'count' => $order_product->get_quantity(),
         );
     }
-	
+
 	$data_to_send = [
 		'token'=>$token,
 		'data'=>[
@@ -83,9 +83,9 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
 			],
 		],
 	];
-	
-	
-    $url = HOST.':'.PORT;
+//    var_dump(json_encode($data_to_send, JSON_UNESCAPED_UNICODE));
+    $url = ICEBERG_CRM_CART_HOST.':'.ICEBERG_CRM_CART_PORT;
+    var_dump($url);
     $response = wp_remote_post($url.'/sendForm', array(
         'method' => 'POST',
         'timeout' => 45,
@@ -105,9 +105,9 @@ function iceberg_crm_cart_send_order_products_to_server($order_id) {
 }
 
 add_action('woocommerce_thankyou', 'iceberg_crm_cart_send_order_products_to_server', 10, 1);
-add_action( 'admin_init', 'iceberg_crm_cart_check_woocommerce_active' ); 
+add_action( 'admin_init', 'iceberg_crm_cart_check_woocommerce_active' );
 add_action('admin_menu', 'add_iceberg_crm_cart_menu_page');
-add_action('admin_init', 'add_token_form_section_cart');
-add_action('admin_init', 'handle_token_authentication_cart');
+add_action('admin_init', 'iceberg_crm_cart_add_token_form_section_cart');
+add_action('admin_init', 'iceberg_crm_cart_handle_token_authentication_cart');
 register_activation_hook( __FILE__, 'iceberg_crm_cart_install' );
 register_deactivation_hook( __FILE__, 'iceberg_crm_cart_uninstall' );
