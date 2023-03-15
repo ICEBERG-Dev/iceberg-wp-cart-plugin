@@ -48,7 +48,7 @@ jobs:
           tag_name: ${{ steps.version.outputs.version }}
           release_name: Release ${{ steps.version.outputs.version }}
           body: |
-            This is the first release of the plugin.
+            Bug fixed!
           draft: false
           prerelease: false
         if: github.event_name == 'push'
